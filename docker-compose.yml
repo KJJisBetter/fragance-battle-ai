@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: fragrance-db
+    environment:
+      POSTGRES_DB: fragrance_battle
+      POSTGRES_USER: fragrance_user
+      POSTGRES_PASSWORD: your_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - fragrance-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: fragrance-backend
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://fragrance_user:your_password@postgres:5432/fragrance_battle
+      JWT_SECRET: your-super-secret-jwt-key
+      OPENAI_API_KEY: your-openai-api-key
+    ports:
+      - "5000:5000"
+    depends_on:
+      - postgres
+    networks:
+      - fragrance-network
+    volumes:
+      - ./backend:/app
+    command: npm run dev
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: fragrance-frontend
+    environment:
+      VITE_API_URL: http://localhost:5000/api
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - fragrance-network
+    volumes:
+      - ./frontend:/app
+    command: npm run dev
+
+volumes:
+  postgres_data:
+
+networks:
+  fragrance-network:
+    driver: bridge
