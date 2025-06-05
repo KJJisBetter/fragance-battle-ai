@@ -5,6 +5,7 @@ import morgan from 'morgan';
 
 import authRoutes from './routes/auth';
 import fragranceRoutes from './routes/fragrances';
+import testingRoutes from './routes/testing';
 import aiRoutes from './routes/ai';
 import { errorHandler } from './middleware/errorHandler';
 
@@ -30,6 +31,7 @@ app.get('/health', (req, res) => {
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/fragrances', fragranceRoutes);
+app.use('/api/testing', testingRoutes);
 app.use('/api/ai', aiRoutes);
 
 // Error handling
