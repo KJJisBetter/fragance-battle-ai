@@ -12,7 +12,7 @@ const router = express.Router();
 router.post('/recommendations', auth, async (req, res, next) => {
   try {
     const { category } = req.body;
-    const userId = req.user.id;
+    const userId = (req as any).user.id;
 
     if (!category) {
       throw createError('Category is required', 400);
@@ -58,7 +58,7 @@ router.get('/recommendations/:userId', auth, async (req, res, next) => {
     const { userId } = req.params;
 
     // Ensure user can only access their own recommendations
-    if (req.user.id !== userId) {
+    if ((req as any).user.id !== userId) {
       throw createError('Access denied', 403);
     }
 
@@ -77,7 +77,7 @@ router.get('/recommendations/:userId', auth, async (req, res, next) => {
 // POST /api/ai/analyze-preferences - Analyze user preferences from test results
 router.post('/analyze-preferences', auth, async (req, res, next) => {
   try {
-    const userId = req.user.id;
+    const userId = (req as any).user.id;
 
     // Get user's test sessions and results
     const sessions = await TestResultModel.getUserSessions(userId);
@@ -97,9 +97,9 @@ router.post('/analyze-preferences', auth, async (req, res, next) => {
     const selectedFragrances = await FragranceModel.findByIds(selectedFragranceIds);
 
     // Extract patterns
-    const brandFrequency = {};
-    const noteFrequency = {};
-    const categoryFrequency = {};
+    const brandFrequency: { [key: string]: number } = {};
+    const noteFrequency: { [key: string]: number } = {};
+    const categoryFrequency: { [key: string]: number } = {};
 
     selectedFragrances.forEach(fragrance => {
       // Count brands

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { CategoryBattle } from '@/components/CategoryBattle';
 import { TestingInstructions } from '@/components/TestingInstructions';
 import { CollectionGuide } from '@/components/CollectionGuide';
@@ -56,12 +56,12 @@ export const Battle: React.FC = () => {
     }
   };
 
-  const handleSelectionChange = (category: string, selectedIds: string[]) => {
+  const handleSelectionChange = useCallback((category: string, selectedIds: string[]) => {
     setSelections(prev => ({
       ...prev,
       [category]: selectedIds
     }));
-  };
+  }, []);
 
   const handleSaveResults = async () => {
     if (!sessionId) return;

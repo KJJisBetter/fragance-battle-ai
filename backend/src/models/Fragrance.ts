@@ -68,6 +68,21 @@ export class FragranceModel {
   }
 
   private static mapDbToFragrance(row: any): Fragrance {
+    // Parse categories from PostgreSQL array format
+    let categories: string[] = [];
+    if (row.categories) {
+      if (Array.isArray(row.categories)) {
+        categories = row.categories;
+      } else if (typeof row.categories === 'string') {
+        // Handle PostgreSQL array string format like "{category1,category2}"
+        categories = row.categories
+          .replace(/^\{|\}$/g, '') // Remove curly braces
+          .split(',')
+          .map((cat: string) => cat.trim())
+          .filter(Boolean);
+      }
+    }
+
     return {
       id: row.id,
       name: row.name,
@@ -77,7 +92,7 @@ export class FragranceModel {
       middleNotes: row.middle_notes || [],
       baseNotes: row.base_notes || [],
       versatility: row.versatility,
-      categories: row.categories || [],
+      categories,
       description: row.description,
       imageUrl: row.image_url,
       priceCents: row.price_cents,

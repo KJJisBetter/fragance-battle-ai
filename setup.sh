@@ -8,9 +8,14 @@ if ! command -v node &> /dev/null; then
     exit 1
 fi
 
-# Check if PostgreSQL is running
-if ! pg_isready &> /dev/null; then
-    echo "❌ PostgreSQL is not running. Please start PostgreSQL first."
+# Check if Docker is running and PostgreSQL container is up
+if ! command -v docker &> /dev/null; then
+    echo "❌ Docker is not installed. Please install Docker first."
+    exit 1
+fi
+
+if ! docker ps | grep -q fragrance-postgres; then
+    echo "❌ PostgreSQL container is not running. Please start it with 'docker-compose up -d'"
     exit 1
 fi
 
@@ -82,26 +87,26 @@ CURRENT_USER=$(whoami)
 
 # Create database user if it doesn't exist
 echo "Creating database user..."
-sudo -u postgres psql -c "SELECT 1 FROM pg_roles WHERE rolname='fragrance_user'" | grep -q 1 || sudo -u postgres psql -c "CREATE USER fragrance_user WITH PASSWORD 'your_password';"
+docker exec fragrance-postgres psql -U fragrance_user -c "SELECT 1 FROM pg_roles WHERE rolname='fragrance_user'" | grep -q 1 || docker exec fragrance-postgres psql -U fragrance_user -c "CREATE USER fragrance_user WITH PASSWORD 'your_password';"
 
 # Create database if it doesn't exist
 echo "Creating database..."
-sudo -u postgres createdb fragrance_battle 2>/dev/null || echo "Database already exists"
+docker exec fragrance-postgres createdb -U fragrance_user fragrance_battle 2>/dev/null || echo "Database already exists"
 
 # Grant privileges
 echo "Granting database privileges..."
-sudo -u postgres psql -d fragrance_battle -c "GRANT ALL PRIVILEGES ON DATABASE fragrance_battle TO fragrance_user;"
-sudo -u postgres psql -d fragrance_battle -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO fragrance_user;"
-sudo -u postgres psql -d fragrance_battle -c "GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO fragrance_user;"
+docker exec fragrance-postgres psql -U fragrance_user -d fragrance_battle -c "GRANT ALL PRIVILEGES ON DATABASE fragrance_battle TO fragrance_user;"
+docker exec fragrance-postgres psql -U fragrance_user -d fragrance_battle -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO fragrance_user;"
+docker exec fragrance-postgres psql -U fragrance_user -d fragrance_battle -c "GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO fragrance_user;"
 
 # Create current user role if it doesn't exist
 echo "Setting up current user role..."
-sudo -u postgres psql -c "SELECT 1 FROM pg_roles WHERE rolname='$CURRENT_USER'" | grep -q 1 || sudo -u postgres psql -c "CREATE USER $CURRENT_USER WITH SUPERUSER CREATEDB CREATEROLE;"
+docker exec fragrance-postgres psql -U fragrance_user -c "SELECT 1 FROM pg_roles WHERE rolname='$CURRENT_USER'" | grep -q 1 || docker exec fragrance-postgres psql -U fragrance_user -c "CREATE USER $CURRENT_USER WITH SUPERUSER CREATEDB CREATEROLE;"
 
 # Grant privileges to current user
-sudo -u postgres psql -d fragrance_battle -c "GRANT ALL PRIVILEGES ON DATABASE fragrance_battle TO $CURRENT_USER;"
-sudo -u postgres psql -d fragrance_battle -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO $CURRENT_USER;"
-sudo -u postgres psql -d fragrance_battle -c "GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO $CURRENT_USER;"
+docker exec fragrance-postgres psql -U fragrance_user -d fragrance_battle -c "GRANT ALL PRIVILEGES ON DATABASE fragrance_battle TO $CURRENT_USER;"
+docker exec fragrance-postgres psql -U fragrance_user -d fragrance_battle -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO $CURRENT_USER;"
+docker exec fragrance-postgres psql -U fragrance_user -d fragrance_battle -c "GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO $CURRENT_USER;"
 
 # Run migrations
 echo "Running database migrations..."

@@ -1,71 +1,71 @@
-import { query } from '../config/database';
-import logger from '../utils/logger';
+import { pool, query } from '../config/database';
+import { logger } from '../utils/logger';
 
 const sampleFragrances = [
   {
     name: 'Sauvage EDP',
     brand: 'Dior',
-    concentration: 'EDP',
+    concentration: 'eau_de_parfum',
     topNotes: ['Bergamot', 'Pink Pepper'],
     middleNotes: ['Lavender', 'Star Anise', 'Nutmeg'],
     baseNotes: ['Ambroxan', 'Vanilla'],
     versatility: 5,
-    categories: ['daily_driver', 'office', 'club', 'signature', 'special'],
+    categories: ['daily_driver', 'office', 'formal', 'special_occasion'],
     description: 'A fresh and woody fragrance with remarkable longevity',
     priceCents: 15000
   },
   {
     name: 'Light Blue',
     brand: 'Dolce & Gabbana',
-    concentration: 'EDT',
+    concentration: 'eau_de_toilette',
     topNotes: ['Bergamot', 'Apple', 'Cedar'],
     middleNotes: ['Bamboo', 'Jasmine', 'White Rose'],
     baseNotes: ['Cedar', 'Musk', 'Amber'],
     versatility: 4,
-    categories: ['daily_driver', 'college', 'summer'],
+    categories: ['daily_driver', 'summer', 'casual'],
     description: 'Fresh, fruity, and floral - perfect for everyday wear',
     priceCents: 8500
   },
   {
     name: 'Versace Eros',
     brand: 'Versace',
-    concentration: 'EDT',
+    concentration: 'eau_de_toilette',
     topNotes: ['Mint', 'Green Apple', 'Lemon'],
     middleNotes: ['Tonka Bean', 'Geranium'],
     baseNotes: ['Vanilla', 'Vetiver', 'Oakmoss', 'Cedar'],
     versatility: 3,
-    categories: ['club', 'date'],
+    categories: ['date_night', 'special_occasion'],
     description: 'Bold and seductive fragrance for night occasions',
     priceCents: 9500
   },
   {
     name: 'Bleu de Chanel EDP',
     brand: 'Chanel',
-    concentration: 'EDP',
+    concentration: 'eau_de_parfum',
     topNotes: ['Citrus', 'Mint'],
     middleNotes: ['Pink Pepper', 'Ginger', 'Nutmeg', 'Jasmine'],
     baseNotes: ['Cedar', 'Sandalwood', 'Amber'],
     versatility: 5,
-    categories: ['office', 'signature', 'special'],
+    categories: ['office', 'formal', 'special_occasion'],
     description: 'Sophisticated and timeless, perfect for professionals',
     priceCents: 18000
   },
   {
     name: 'Y EDT',
     brand: 'Yves Saint Laurent',
-    concentration: 'EDT',
+    concentration: 'eau_de_toilette',
     topNotes: ['Bergamot', 'Ginger'],
     middleNotes: ['Sage', 'Geranium'],
     baseNotes: ['Balsam Fir', 'Cedar', 'Amberwood'],
     versatility: 4,
-    categories: ['college', 'date'],
+    categories: ['daily_driver', 'date_night'],
     description: 'Fresh and modern fragrance for the confident man',
     priceCents: 11000
   },
   {
     name: 'Acqua di Gio',
     brand: 'Giorgio Armani',
-    concentration: 'EDT',
+    concentration: 'eau_de_toilette',
     topNotes: ['Bergamot', 'Neroli', 'Green Tangerine'],
     middleNotes: ['Marine Notes', 'Jasmine', 'Rosemary'],
     baseNotes: ['White Musk', 'Cedar', 'Oakmoss'],
@@ -77,24 +77,24 @@ const sampleFragrances = [
   {
     name: 'The One EDP',
     brand: 'Dolce & Gabbana',
-    concentration: 'EDP',
+    concentration: 'eau_de_parfum',
     topNotes: ['Grapefruit', 'Coriander'],
     middleNotes: ['Cardamom', 'Ginger', 'Orange Blossom'],
     baseNotes: ['Tobacco', 'Cedar', 'Amber'],
     versatility: 3,
-    categories: ['date', 'winter', 'special'],
+    categories: ['date_night', 'winter', 'special_occasion'],
     description: 'Warm and spicy, perfect for intimate occasions',
     priceCents: 12500
   },
   {
     name: 'Spicebomb Extreme',
     brand: 'Viktor & Rolf',
-    concentration: 'EDP',
+    concentration: 'eau_de_parfum',
     topNotes: ['Black Pepper', 'Lavender'],
     middleNotes: ['Caraway', 'Cinnamon'],
     baseNotes: ['Tobacco', 'Vanilla'],
     versatility: 3,
-    categories: ['club', 'winter'],
+    categories: ['winter', 'special_occasion'],
     description: 'Explosive spicy fragrance for cold weather',
     priceCents: 14000
   }

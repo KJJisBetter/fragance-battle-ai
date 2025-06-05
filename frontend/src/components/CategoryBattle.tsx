@@ -18,7 +18,7 @@ export const CategoryBattle: React.FC<CategoryBattleProps> = ({
 
   useEffect(() => {
     onSelectionChange(battleData.category, selectedFragrances);
-  }, [selectedFragrances, battleData.category, onSelectionChange]);
+  }, [selectedFragrances, battleData.category]);
 
   const handleFragranceSelect = (fragranceId: string) => {
     if (isMultiSelect) {

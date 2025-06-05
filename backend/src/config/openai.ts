@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import logger from '../utils/logger';
+import { logger } from '../utils/logger';
 
 if (!process.env.OPENAI_API_KEY) {
   throw new Error('OPENAI_API_KEY is required');

@@ -10,7 +10,7 @@ const router = express.Router();
 router.post('/session', auth, async (req, res, next) => {
   try {
     const { sessionName, isBlindTest = true } = req.body;
-    const userId = req.user.id;
+    const userId = (req as any).user.id;
 
     const session = await TestResultModel.createSession(userId, sessionName, isBlindTest);
     res.status(201).json(session);
@@ -67,7 +67,7 @@ router.get('/session/:sessionId/results', auth, async (req, res, next) => {
 // GET /api/testing/sessions - Get user's test sessions
 router.get('/sessions', auth, async (req, res, next) => {
   try {
-    const userId = req.user.id;
+    const userId = (req as any).user.id;
     const sessions = await TestResultModel.getUserSessions(userId);
     res.json(sessions);
   } catch (error) {
@@ -80,6 +80,24 @@ router.get('/battle-data/:category', async (req, res, next) => {
   try {
     const { category } = req.params;
     const fragrances = await FragranceModel.findByCategory(category);
+
+    // Transform fragrances to match frontend format
+    const transformedFragrances = fragrances.map(fragrance => ({
+      id: fragrance.id,
+      name: fragrance.name,
+      brand: fragrance.brand,
+      notes: {
+        top: fragrance.topNotes,
+        middle: fragrance.middleNotes,
+        base: fragrance.baseNotes
+      },
+      versatility: fragrance.versatility,
+      categories: fragrance.categories,
+      description: fragrance.description,
+      imageUrl: fragrance.imageUrl,
+      price: fragrance.priceCents ? fragrance.priceCents / 100 : undefined,
+      concentration: fragrance.concentration as 'EDT' | 'EDP' | 'Parfum' | 'Cologne'
+    }));
 
     // Battle configuration based on your HTML prototype
     const battleConfigs = {
@@ -156,7 +174,7 @@ router.get('/battle-data/:category', async (req, res, next) => {
     res.json({
       category,
       ...config,
-      fragrances
+      fragrances: transformedFragrances
     });
   } catch (error) {
     next(error);
