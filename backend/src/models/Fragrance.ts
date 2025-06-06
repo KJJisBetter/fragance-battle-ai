@@ -44,6 +44,35 @@ export class FragranceModel {
     return result.rows.map(this.mapDbToFragrance);
   }
 
+  static async searchFragrances(searchTerm: string): Promise<Fragrance[]> {
+    const result = await query(`
+      SELECT * FROM fragrances
+      WHERE LOWER(name) LIKE $1 OR LOWER(brand) LIKE $1
+      ORDER BY
+        CASE
+          WHEN LOWER(name) = $2 THEN 1
+          WHEN LOWER(name) LIKE $3 THEN 2
+          WHEN LOWER(brand) = $2 THEN 3
+          ELSE 4
+        END,
+        name
+      LIMIT 10
+    `, [
+      `%${searchTerm}%`,  // $1 - partial match
+      searchTerm,         // $2 - exact match
+      `${searchTerm}%`    // $3 - starts with
+    ]);
+    return result.rows.map(this.mapDbToFragrance);
+  }
+
+  static async findByNameAndBrand(name: string, brand: string): Promise<Fragrance | null> {
+    const result = await query(
+      'SELECT * FROM fragrances WHERE LOWER(name) = LOWER($1) AND LOWER(brand) = LOWER($2)',
+      [name, brand]
+    );
+    return result.rows.length > 0 ? this.mapDbToFragrance(result.rows[0]) : null;
+  }
+
   static async create(fragrance: Omit<Fragrance, 'id' | 'createdAt' | 'updatedAt'>): Promise<Fragrance> {
     const result = await query(`
       INSERT INTO fragrances (

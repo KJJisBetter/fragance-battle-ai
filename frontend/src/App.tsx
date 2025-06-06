@@ -1,20 +1,21 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Battle } from '@/pages/Battle';
-import { Login } from '@/components/Login';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Login } from './components/Login';
+import { Battle } from './pages/Battle';
+import { AddFragrance } from './pages/AddFragrance';
 import './index.css';
 
 function App() {
   return (
-    <Router>
+    <BrowserRouter>
       <div className="App">
         <Routes>
-          <Route path="/" element={<Battle />} />
-          <Route path="/battle" element={<Battle />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Battle />} />
+          <Route path="/add-fragrance" element={<AddFragrance />} />
         </Routes>
       </div>
-    </Router>
+    </BrowserRouter>
   );
 }
 

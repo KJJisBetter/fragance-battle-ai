@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { CategoryBattle } from '@/components/CategoryBattle';
 import { TestingInstructions } from '@/components/TestingInstructions';
 import { CollectionGuide } from '@/components/CollectionGuide';
@@ -117,9 +118,18 @@ export const Battle: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold text-center text-blue-900 mb-8">
-          Fragrance Testing Guide
-        </h1>
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-4xl font-bold text-center text-blue-900">
+            Fragrance Testing Guide
+          </h1>
+          <Link
+            to="/add-fragrance"
+            className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center gap-2"
+          >
+            <span>+</span>
+            Add Fragrance
+          </Link>
+        </div>
 
         {battleData.map((battle) => (
           <CategoryBattle
